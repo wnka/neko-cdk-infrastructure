@@ -17,9 +17,10 @@ See scripts in `helpers/` for help in launching/terminating instances.
 2. Tweak the `UserData` scripts in `src` to have the desired `NEKO_PASSWORD` and `NEKO_PASSWORD_ADMIN` values.
 3. Do a `cdk deploy` to create the CloudFormation stack.
 4. Launch an instance
-5. Open up `http://public-ip-of-instance:8080`
-6. Terminate your instance when done.
-7. Run `cdk destroy` if you want to tear down the stack. Not necessary tho.
+5. Open up `http://public-ip-of-instance:8080` and use either `NEKO_PASSWORD` or `NEKO_PASSWORD_ADMIN` to login. See the [neko docs](https://neko.m1k1o.net/) for more info.
+6. For VLC, `scp` your video files to `ec2-user@<ip>:video/`. Those files will show up in VLC under `/video`.
+7. Terminate your instance when done.
+8. Run `cdk destroy` if you want to tear down the stack. Not necessary tho.
 
 ## Useful commands
 
