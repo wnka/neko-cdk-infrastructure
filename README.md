@@ -6,7 +6,7 @@ This is a [AWS CDK](https://aws.amazon.com/cdk/) infrastructure package that set
 
 1. Sets up the needed security groups and ingress rules.
 2. Uses the default Amazon Linux 2 AMI but installs `docker` and `docker-compose` on boot, then runs `docker-compose up` to fire up neko. 
-3. Creates 2 launch templates (one for Firefox, one for VLC) that you can use with `aws ec2 run-instances --launch-template` to easily spin up a new instance.
+3. Creates 2 launch templates (one for Firefox, one for VLC) and two AutoScaling groups (ASGs) for spinning up instances.
 4. Currently requests a `t3a.xlarge` with Spot pricing.
 
 ## How to use
@@ -16,10 +16,10 @@ See scripts in `helpers/` for help in launching/terminating instances.
 1. Create a keypair named `nekonekocdk` in your account.
 2. Tweak the `UserData` scripts in `src` to have the desired `NEKO_PASSWORD` and `NEKO_PASSWORD_ADMIN` values.
 3. Do a `cdk deploy` to create the CloudFormation stack.
-4. Launch an instance
+4. Launch an instance by setting the Desired Capacity to 1 on the right ASG.
 5. Open up `http://public-ip-of-instance:8080` and use either `NEKO_PASSWORD` or `NEKO_PASSWORD_ADMIN` to login. See the [neko docs](https://neko.m1k1o.net/) for more info.
 6. For VLC, `scp` your video files to `ec2-user@<ip>:video/`. Those files will show up in VLC under `/video`.
-7. Terminate your instance when done.
+7. Terminate the instance by setting the Desired Capacity to 0 on the ASGs.
 8. Run `cdk destroy` if you want to tear down the stack. Not necessary tho.
 
 ## Useful commands

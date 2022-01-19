@@ -1,5 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as cdk from 'aws-cdk-lib';
@@ -70,6 +71,23 @@ export class NekoInfraStack extends Stack {
       ]
     });
 
+    const autoscalingVlc = new autoscaling.CfnAutoScalingGroup(this, 'asg-vlc', {
+      maxSize: '1',
+      minSize: '0',
+      desiredCapacity: '0',
+      availabilityZones: cdk.Stack.of(this).availabilityZones,
+      autoScalingGroupName: 'neko-vlc-asg',
+      launchTemplate: {
+        version: launchTemplateVlc.latestVersionNumber,
+        launchTemplateId: launchTemplateVlc.launchTemplateId
+      },
+      tags: [{
+        key: 'application',
+        propagateAtLaunch: true,
+        value: 'neko',
+      }]
+    });
+
     const userDataFirefox = ec2.UserData.forLinux();
 
     // Create an asset that will be used as part of User Data to run on first load
@@ -104,7 +122,46 @@ export class NekoInfraStack extends Stack {
       ]
     });
 
-    new cdk.CfnOutput(this, 'VLC launch command', { value: 'aws ec2 run-instances --launch-template LaunchTemplateId=' + launchTemplateVlc.launchTemplateId + ',Version=' + launchTemplateVlc.latestVersionNumber + ' --profile <your profile>' })
-    new cdk.CfnOutput(this, 'Firefox launch command', { value: 'aws ec2 run-instances --launch-template LaunchTemplateId=' + launchTemplateFirefox.launchTemplateId + ',Version=' + launchTemplateFirefox.latestVersionNumber + ' --profile <your profile>' })
+    const autoscalingFirefox = new autoscaling.CfnAutoScalingGroup(this, 'asg-firefox', {
+      maxSize: '1',
+      minSize: '0',
+      desiredCapacity: '0',
+      availabilityZones: cdk.Stack.of(this).availabilityZones,
+      autoScalingGroupName: 'neko-firefox-asg',
+      launchTemplate: {
+        version: launchTemplateFirefox.latestVersionNumber,
+        launchTemplateId: launchTemplateFirefox.launchTemplateId
+      },
+      tags: [{
+        key: 'application',
+        propagateAtLaunch: true,
+        value: 'neko',
+      }]
+    });
+
+    const user = new iam.User(this, 'neko-user', {
+      userName: 'neko-user',
+    });
+
+    // create a policy that has minimal creds for using neko
+    const nekoUserPolicy = new iam.Policy(this, 'neko-helper-policy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['autoscaling:SetDesiredCapacity'],
+          resources: ['*'],
+          conditions: {
+                "StringEquals": {"autoscaling:ResourceTag/application": "neko"}
+          }
+        }),
+        new iam.PolicyStatement({
+          actions: ["ec2:DescribeInstances"],
+          resources: ['*'],
+        })
+      ],
+    });
+    user.attachInlinePolicy(nekoUserPolicy);
+
+    new cdk.CfnOutput(this, 'VLC AutoScalingGroup', { value: 'aws autoscaling set-desired-capacity --auto-scaling-group-name ' + autoscalingVlc.autoScalingGroupName! + ' --desired-capacity 1' })
+    new cdk.CfnOutput(this, 'Firefox AutoScalingGroup', { value: 'aws autoscaling set-desired-capacity --auto-scaling-group-name ' + autoscalingFirefox.autoScalingGroupName! + ' --desired-capacity 1' })
   }
 }
