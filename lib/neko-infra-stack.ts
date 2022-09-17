@@ -54,7 +54,7 @@ export class NekoInfraStack extends Stack {
     });
 
     const launchTemplateVlc = new ec2.LaunchTemplate(this, 'NekoLaunchTemplate-VLC', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.XLARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6I, ec2.InstanceSize.XLARGE2),
       machineImage: ami,
       securityGroup: mySecurityGroup,
       keyName: "nekonekocdk",
@@ -105,7 +105,7 @@ export class NekoInfraStack extends Stack {
     });
 
     const launchTemplateFirefox = new ec2.LaunchTemplate(this, 'NekoLaunchTemplate-Firefox', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.XLARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6I, ec2.InstanceSize.XLARGE2),
       machineImage: ami,
       securityGroup: mySecurityGroup,
       keyName: "nekonekocdk",
