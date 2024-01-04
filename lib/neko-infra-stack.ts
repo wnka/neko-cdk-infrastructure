@@ -31,9 +31,9 @@ export class NekoInfraStack extends Stack {
 
     role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'))
 
-    // Use Latest Amazon Linux Image - CPU Type ARM64
+    // Use Latest Amazon Linux Image
     const ami = new ec2.AmazonLinuxImage({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       cpuType: ec2.AmazonLinuxCpuType.X86_64
     });
 
@@ -54,7 +54,7 @@ export class NekoInfraStack extends Stack {
     });
 
     const launchTemplateVlc = new ec2.LaunchTemplate(this, 'NekoLaunchTemplate-VLC', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6I, ec2.InstanceSize.XLARGE2),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7I_FLEX, ec2.InstanceSize.XLARGE2),
       machineImage: ami,
       securityGroup: mySecurityGroup,
       keyName: "nekonekocdk",
@@ -105,7 +105,7 @@ export class NekoInfraStack extends Stack {
     });
 
     const launchTemplateFirefox = new ec2.LaunchTemplate(this, 'NekoLaunchTemplate-Firefox', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6I, ec2.InstanceSize.XLARGE2),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7I_FLEX, ec2.InstanceSize.XLARGE2),
       machineImage: ami,
       securityGroup: mySecurityGroup,
       keyName: "nekonekocdk",
