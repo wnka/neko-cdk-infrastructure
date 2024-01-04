@@ -20,7 +20,7 @@ services:
       NEKO_EPR: 59000-59100
 EOF
 chown ec2-user /home/ec2-user/docker-compose.yaml
-amazon-linux-extras install -y docker
+yum install -y docker
 service docker start
 usermod -a -G docker ec2-user
 chmod 666 /var/run/docker.sock
