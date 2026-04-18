@@ -53,11 +53,13 @@ export class NekoInfraStack extends Stack {
       arguments: '--verbose -y'
     });
 
+    const keyPair = ec2.KeyPair.fromKeyPairName(this, 'KeyPair', 'nekonekocdk');
+
     const launchTemplateVlc = new ec2.LaunchTemplate(this, 'NekoLaunchTemplate-VLC', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7I_FLEX, ec2.InstanceSize.XLARGE2),
       machineImage: ami,
       securityGroup: mySecurityGroup,
-      keyName: "nekonekocdk",
+      keyPair,
       role: role,
       userData: userDataVlc,
       spotOptions: {requestType: ec2.SpotRequestType.ONE_TIME},
@@ -108,7 +110,7 @@ export class NekoInfraStack extends Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7I_FLEX, ec2.InstanceSize.XLARGE2),
       machineImage: ami,
       securityGroup: mySecurityGroup,
-      keyName: "nekonekocdk",
+      keyPair,
       role: role,
       userData: userDataFirefox,
       spotOptions: {requestType: ec2.SpotRequestType.ONE_TIME},
