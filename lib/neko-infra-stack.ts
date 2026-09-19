@@ -22,8 +22,8 @@ export class NekoInfraStack extends Stack {
       allowAllOutbound: true   // Can be set to false
     });
     mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
-    mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'allow http access from the world');
-    mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.udpRange(59000, 59100), 'websockets for neko');
+    // mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'allow http access from the world');
+    // mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.udpRange(59000, 59100), 'websockets for neko');
 
     const role = new iam.Role(this, 'ec2Role', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
