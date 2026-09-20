@@ -20,7 +20,7 @@ If you need to use a different AWS `--profile` then you'll have to add that to t
 If you have a different profile in your `~/.aws/credentials` file that you want to use with these scripts, then you can set the `AWS_PROFILE` environment variable:
 
 ``` sh
-export AWS_PROFILE=neko
+export AWS_PROFILE=neko-admin
 ```
 
 Easy!

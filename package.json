@@ -1,23 +1,20 @@
 {
   "name": "neko-infra",
   "version": "0.1.0",
-  "bin": {
-    "neko-infra": "bin/neko-infra.js"
-  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "test": "node --import tsx --test test/*.test.ts",
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.9",
-    "@types/node": "^25.6.0",
-    "typescript": "^6.0.3"
+    "@types/node": "^24.13.6",
+    "aws-cdk": "2.1142.0",
+    "tsx": "^4.23.13",
+    "typescript": "~7.0.2"
   },
   "dependencies": {
-    "aws-cdk": "^2.1140.0",
-    "aws-cdk-lib": "^2.268.0",
-    "constructs": "^10.4.2",
-    "source-map-support": "^0.5.21"
+    "aws-cdk-lib": "^2.270.0",
+    "constructs": "^10.8.1"
   }
 }

@@ -22,8 +22,12 @@ export class NekoInfraStack extends Stack {
       allowAllOutbound: true   // Can be set to false
     });
     mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
-    // mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'allow http access from the world');
-    // mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.udpRange(59000, 59100), 'websockets for neko');
+    mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'allow Neko HTTP access from the world');
+    mySecurityGroup.addIngressRule(
+      ec2.Peer.anyIpv4(),
+      ec2.Port.udpRange(59000, 59100),
+      'allow Neko WebRTC access from the world',
+    );
 
     const role = new iam.Role(this, 'ec2Role', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
@@ -31,10 +35,10 @@ export class NekoInfraStack extends Stack {
 
     role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'))
 
-    // Use Latest Amazon Linux Image
-    const ami = new ec2.AmazonLinuxImage({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
-      cpuType: ec2.AmazonLinuxCpuType.X86_64
+    // Use the latest Amazon Linux 2023 AMI and kernel available to this CDK release.
+    const ami = ec2.MachineImage.latestAmazonLinux2023({
+      cpuType: ec2.AmazonLinuxCpuType.X86_64,
+      kernel: ec2.AmazonLinux2023Kernel.CDK_LATEST,
     });
 
     const userDataVlc = ec2.UserData.forLinux();
@@ -68,6 +72,7 @@ export class NekoInfraStack extends Stack {
           deviceName: '/dev/xvda',
           volume: ec2.BlockDeviceVolume.ebs(8, {
             encrypted: false,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
           })
         }
       ]
@@ -119,6 +124,7 @@ export class NekoInfraStack extends Stack {
           deviceName: '/dev/xvda',
           volume: ec2.BlockDeviceVolume.ebs(8, {
             encrypted: false,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
           })
         }
       ]
