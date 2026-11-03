@@ -5,7 +5,10 @@
   env.GREET = "devenv";
 
   # https://devenv.sh/packages/
-  packages = [ pkgs.git ];
+  # nodejs is pinned explicitly so that `devenv update`/nixpkgs bumps cannot move
+  # the runtime major under @types/node (^24) and package.json "engines".
+  # If you bump this, bump @types/node in package.json in the same commit.
+  packages = [ pkgs.git pkgs.nodejs_24 ];
 
   # https://devenv.sh/languages/
   # languages.typescript.enable = true;

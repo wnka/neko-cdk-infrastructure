@@ -1,0 +1,54 @@
+version: 2
+updates:
+  # CDK app dependencies.
+  #
+  # IMPORTANT: aws-cdk (the CLI) and aws-cdk-lib must always be bumped in the
+  # same PR. aws-cdk-lib >= 2.274.0 writes cloud assembly schema 55.x, which
+  # CDK CLI < 2.1147.0 refuses to read:
+  #   "Cloud assembly schema version mismatch ... You need at least CLI version
+  #    2.1147.0 to read this manifest."
+  # Both are pinned exactly in package.json so they move together deliberately.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      aws-cdk:
+        patterns:
+          - "aws-cdk"
+          - "aws-cdk-lib"
+        update-types:
+          - "minor"
+          - "patch"
+      tooling:
+        patterns:
+          - "typescript"
+          - "tsx"
+          - "@types/node"
+    ignore:
+      # aws-cdk 3.0.0 was published accidentally and is deprecated on npm
+      # ("Please use 2.x.x instead"). Never let an automerge pick it up.
+      - dependency-name: "aws-cdk"
+        versions:
+          - ">= 3.0.0"
+      # Keep @types/node aligned with the Node major that devenv provides
+      # (pkgs.nodejs_24). Bump these together, by hand.
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
+
+  # GitHub Actions (add workflows here and they get bumped automatically).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+
+  # devenv.lock is a flake.lock under a non-standard name, so Dependabot's "nix"
+  # ecosystem (which only reads flake.lock) does not pick it up. Update it with
+  # `devenv update` and check that pkgs.nodejs_24 still exists before merging.
